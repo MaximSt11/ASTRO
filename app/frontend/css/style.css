@@ -1,0 +1,149 @@
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #ffffff;
+    --text-secondary: #a0a0a0;
+    --accent: #ffd700;
+    --nav-bg: rgba(15, 12, 41, 0.95);
+    --error-color: #ff6b6b;
+}
+[data-theme="purple"] { --bg-gradient: linear-gradient(135deg, #240b36, #c31432); --accent: #ff00cc; }
+[data-theme="ocean"] { --bg-gradient: linear-gradient(135deg, #001f3f, #005f73, #0a9396); --accent: #00ffff; }
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
+body {
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.8s ease;
+}
+
+/* Звезды */
+.stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle infinite ease-in-out;
+    will-change: transform, opacity; /* <--- ВАЖНО: Включает GPU ускорение */
+}
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); } }
+
+/* Контейнер */
+#app-container { flex: 1; overflow-y: auto; padding: 20px 20px 110px 20px; position: relative; }
+
+/* Страницы */
+.page { display: none; animation: fadeIn 0.4s forwards; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* UI Элементы */
+.card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; margin-bottom: 16px; backdrop-filter: blur(20px); }
+h1, h2, h3 { margin: 0 0 10px 0; font-weight: 600; }
+h1 { font-size: 28px; }
+p { color: #ddd; margin: 0; font-size: 15px; line-height: 1.5; }
+
+/* Шапка профиля */
+.profile-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+.profile-info { display: flex; align-items: center; gap: 15px; }
+
+.avatar-box {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: bold; color: white; cursor: pointer;
+    overflow: hidden;
+}
+.avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+
+.user-name h2 { font-size: 20px; margin: 0; }
+.user-name span { font-size: 13px; color: var(--accent); opacity: 0.9; }
+
+.settings-btn { width: 44px; height: 44px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; }
+
+/* Виджеты */
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.widget { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; height: 110px; display: flex; flex-direction: column; justify-content: space-between; }
+.widget-value { font-size: 17px; font-weight: 700; color: white; }
+
+/* Кнопки и инпуты */
+.btn { background: var(--accent); color: #1a1a2e; border: none; padding: 14px; border-radius: 16px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 20px; transition: opacity 0.2s; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+label { display: block; margin: 15px 0 8px; font-size: 14px; color: var(--text-secondary); }
+input, select { width: 100%; padding: 14px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: white; font-size: 16px; }
+
+/* Модальное окно */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: flex-end; backdrop-filter: blur(8px); }
+.modal-overlay.active { display: flex; }
+.modal { background: #1e1e2f; width: 100%; border-radius: 24px 24px 0 0; padding: 30px 24px 40px 24px; transform: translateY(100%); transition: transform 0.3s; max-height: 85vh; overflow-y: auto; }
+.modal-overlay.active .modal { transform: translateY(0); }
+
+/* Навигация */
+.bottom-nav {
+    position: fixed; bottom: 20px; left: 20px; right: 20px;
+    height: 70px; background: var(--nav-bg);
+    border: 1px solid var(--glass-border); border-radius: 24px;
+    display: flex; justify-content: space-around; align-items: center;
+    z-index: 100; backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* ИСПРАВЛЕНИЕ КУРСОРА ЗДЕСЬ */
+.nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--text-secondary); font-size: 10px;
+    width: 60px; height: 60px; border-radius: 16px;
+    transition: all 0.2s;
+    cursor: pointer !important;  /* Принудительно ставим "руку" */
+    user-select: none;           /* Запрещаем выделение текста */
+    -webkit-user-select: none;
+}
+.nav-item.active { color: var(--text-main); background: rgba(255,255,255,0.05); transform: translateY(-5px); }
+
+/* --- ДЫХАНИЕ --- */
+.breathing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 0;
+}
+
+.breathing-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    box-shadow: 0 0 30px var(--accent);
+    opacity: 0.6;
+    transform: scale(1);
+    transition: all 0.3s ease;
+}
+
+/* Класс для анимации */
+.breathing-active {
+    animation: breathe 12s infinite ease-in-out; /* Цикл 12 секунд (4 вдох, 4 задержка, 4 выдох) */
+}
+
+@keyframes breathe {
+    0% { transform: scale(1); opacity: 0.4; }    /* Выдох */
+    35% { transform: scale(1.8); opacity: 1; }   /* Вдох */
+    65% { transform: scale(1.8); opacity: 1; }   /* Задержка */
+    100% { transform: scale(1); opacity: 0.4; }  /* Выдох */
+}
+
+.breath-instruction {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    min-height: 24px;
+    transition: opacity 0.5s;
+}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Astro App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="css/style.css?v=1.8">
+</head>
+<body>
+
+    <div class="stars" id="star-bg"></div>
+
+    <div id="app-container">
+        <div id="page-home" class="page active">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="avatar-box" id="avatar-container" onclick="openSettings()">
+                        <span id="avatar-initials">?</span>
+                    </div>
+                    <div class="user-name">
+                        <h2 id="display-name">Загрузка...</h2>
+                        <span id="zodiac-display">Настройте профиль</span>
+                    </div>
+                </div>
+                <div class="settings-btn" onclick="openSettings()">⚙️</div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="widget">
+                    <div>♈ Мой Знак</div>
+                    <div class="widget-value" id="widget-sign">—</div>
+                </div>
+                <div class="widget">
+                    <div>🌎 Город</div>
+                    <div class="widget-value" id="widget-place" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">—</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔮 Совет дня</h3>
+                <p id="daily-advice-text" style="font-style: italic; opacity: 0.8; margin-top: 10px;">Связь с космосом...</p>
+                <button class="btn" onclick="getDailyAdvice()">Получить послание</button>
+            </div>
+        </div>
+
+        <div id="page-astro" class="page">
+            <div class="card">
+                <h2>🌌 Ваша Натальная Карта</h2>
+                <div id="astro-list" style="display: flex; flex-direction: column; gap: 10px; min-height: 100px;">
+                    <div style="text-align: center; padding: 20px;">Загрузка...</div>
+                </div>
+            </div>
+
+            <div class="card" id="astro-analysis-card">
+                <h3>📜 Чтение карты</h3>
+                <p style="opacity: 0.7; font-size: 13px; margin-bottom: 15px;">
+                    Анализируем сплетение энергий ваших планет.
+                </p>
+                <div id="astro-analysis-text" style="white-space: pre-wrap; line-height: 1.6; font-size: 15px;"></div>
+                <button class="btn" id="btn-analyze-astro" onclick="getAstroInterpretation()">Расшифровать личность</button>
+            </div>
+
+            <button class="btn" style="background: rgba(255,255,255,0.1); color: #fff; margin-top: 10px;" onclick="loadAstroData(true)">🔄 Пересчитать данные</button>
+        </div>
+        <div id="page-numero" class="page">
+            <div class="card" id="numero-content">
+                <h2>🔢 Число Жизненного Пути</h2>
+                <p style="opacity: 0.7; font-size: 13px; margin-bottom: 20px;">
+                    Самое важное число в нумерологической карте. Оно раскрывает вашу миссию.
+                </p>
+
+                <div id="numero-result" style="min-height: 50px;"></div>
+
+                <button id="btn-numero" class="btn" style="margin-top:20px;" onclick="getNumerology()">Рассчитать число</button>
+            </div>
+        </div>
+        <div id="page-practice" class="page">
+            <div class="card" style="text-align: center;">
+                <h2>🌬 Космическое Дыхание</h2>
+                <p style="font-size: 13px; opacity: 0.7; margin-bottom: 20px;">
+                    Успокой ум и восстанови баланс.
+                </p>
+
+                <div class="breathing-container">
+                    <div id="breath-circle" class="breathing-circle"></div>
+                    <div id="breath-text" class="breath-instruction">Готов?</div>
+                </div>
+
+                <button id="btn-breath" class="btn" onclick="toggleBreathing()">Начать практику</button>
+            </div>
+
+            <div class="card">
+                <h3>✨ Установка дня</h3>
+                <p id="affirmation-text" style="font-size: 18px; font-weight: 500; text-align: center; margin: 20px 0; min-height: 40px;">
+                    Нажми кнопку, чтобы получить знак.
+                </p>
+                <button id="btn-affirmation" class="btn" onclick="getAffirmation()">Получить установку</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal" onclick="closeSettings(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div style="width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px auto;"></div>
+            <h3>Настройки профиля</h3>
+
+            <label>Ваше Имя</label>
+            <input type="text" id="name-input">
+
+            <label>Дата рождения</label>
+            <input type="date" id="birth-date-input">
+
+            <label>Время рождения</label>
+            <input type="time" id="birth-time-input">
+
+            <label>Место рождения</label>
+            <input type="text" id="birth-place-input" placeholder="Введите город">
+
+            <label>Тема оформления</label>
+            <select id="theme-select" onchange="changeTheme(this.value)">
+                <option value="default">✨ Глубокий Космос</option>
+                <option value="purple">🔮 Мистик</option>
+                <option value="ocean">🌊 Океан Разума</option>
+            </select>
+
+            <button class="btn" onclick="saveProfile()">Сохранить изменения</button>
+            <p id="save-status" style="text-align: center; margin-top:10px; font-size:12px; opacity:0.8;"></p>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home', this)">🏠<span>Главная</span></div>
+        <div class="nav-item" onclick="switchTab('astro', this)">🌙<span>Астро</span></div>
+        <div class="nav-item" onclick="switchTab('numero', this)">🔢<span>Числа</span></div>
+        <div class="nav-item" onclick="switchTab('practice', this)">🧘<span>Практики</span></div>
+    </nav>
+
+    <script src="js/app.js?v=2.6"></script>
+</body>
+</html>
